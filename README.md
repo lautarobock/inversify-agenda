@@ -78,3 +78,11 @@ const agenda = new InversifyAgenda(container, { agenda }).build();
 agenda.start();
 ```
 
+## Next steps
+
+1. Refactor in several files
+2. Change `@task` decorator to be full compatible with `agenda.define` and `agenda.every`. Including priority, time zone, concurrency etc. 
+
+## Collaboration
+
+This proyect is widely open to collaborators, please feel free to raise an issue or create a pull request. 
