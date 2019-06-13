@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { defineTaskService, AgendaTaskCommand, AgendaTask, inversifyAgendaTasksConfiguration } from './inversify-agenda';
+import { InversifyAgenda, AgendaTaskCommand, task, inversifyAgendaTasksConfiguration } from './inversify-agenda';
 import { Container } from 'inversify';
 import * as Agenda from 'agenda';
 
@@ -26,7 +26,7 @@ describe('defineTaskService', () => {
         } as Agenda;
         spyOn(agenda, 'define').and.callThrough();
         spyOn(container, 'get').and.callThrough();
-        defineTaskService(
+        InversifyAgenda.defineTaskService(
             container,
             agenda,
             'test',
@@ -40,21 +40,21 @@ describe('defineTaskService', () => {
 
 describe('AgendaTask', () => {
     
-    @AgendaTask('test', '10 minutes')
+    @task('test', '10 minutes')
     class TestCommand implements AgendaTaskCommand {
         async execute() {
             console.log('DO NOTHING');
         }
     }
 
-    @AgendaTask('test2', '20 minutes')
+    @task('test2', '20 minutes')
     class TestCommand2 implements AgendaTaskCommand {
         async execute() {
             console.log('DO NOTHING');
         }
     }
 
-    @AgendaTask('test22', '20 minutes')
+    @task('test22', '20 minutes')
     class TestCommand22 implements AgendaTaskCommand {
         async execute() {
             console.log('DO NOTHING');

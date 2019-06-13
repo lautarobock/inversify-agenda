@@ -27,26 +27,10 @@ export class InversifyAgendaTasksConfiguration {
 
 export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfiguration();
 
-export function AgendaTask(key: string, ...int: (number | string)[]) {
+export function task(key: string, ...int: (number | string)[]) {
     return (target: any) => {
         inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, ...int);
     };
-}
-
-export function defineTaskService(
-    container: Container,
-    agenda: Agenda,
-    key: string,
-    target: symbol
-) {
-    agenda.define(key, async (job: Agenda.Job<Agenda.JobAttributesData>, done: (err?: Error) => void) => {
-        try {
-            await (container.get(target) as any).execute(job);
-            done();
-        } catch (err) {
-            done(err);
-        }
-    });
 }
 
 export class InversifyAgenda {
@@ -82,7 +66,7 @@ export class InversifyAgenda {
     build() {
         inversifyAgendaTasksConfiguration.tasks.forEach(task => {
             this.container.bind(task.target).toSelf();
-            defineTaskService(this.container, this.config.agenda, task.key, task.target);
+            InversifyAgenda.defineTaskService(this.container, this.config.agenda, task.key, task.target);
         });
 
         this.config.agenda.on('ready', () =>
@@ -92,5 +76,21 @@ export class InversifyAgenda {
                 )
         );
         return this.config.agenda;
+    }
+
+    static defineTaskService(
+        container: Container,
+        agenda: Agenda,
+        key: string,
+        target: symbol
+    ) {
+        agenda.define(key, async (job: Agenda.Job<Agenda.JobAttributesData>, done: (err?: Error) => void) => {
+            try {
+                await (container.get(target) as any).execute(job);
+                done();
+            } catch (err) {
+                done(err);
+            }
+        });
     }
 }

@@ -1,1 +1,1 @@
-export { InversifyAgenda, AgendaTask, AgendaTaskCommand } from './inversify-agenda';
+export { InversifyAgenda, task, AgendaTaskCommand } from './inversify-agenda';
