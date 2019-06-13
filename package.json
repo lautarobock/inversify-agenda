@@ -1,12 +1,14 @@
 {
   "name": "inversify-agenda",
-  "version": "0.0.6",
+  "version": "0.0.6-beta.0",
   "description": "inversify utilities (decorators, etc) to integrate agenda with inversify",
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run build && jasmine --config=jasmine.json",
     "build": "tsc",
-    "bump:beta": "npm-bump beta"
+    "bump:beta": "npm-bump beta",
+    "bump:minor": "npm-bump minor",
+    "publish": "npm build && npm publish"
   },
   "author": "Lautaro Cozzani",
   "license": "MIT",
