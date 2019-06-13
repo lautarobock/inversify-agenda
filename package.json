@@ -4,8 +4,9 @@
   "description": "inversify utilities (decorators, etc) to integrate agenda with inversify",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "test": "npm run build && jasmine --config=jasmine.json",
+    "build": "tsc",
+    "bump:beta": "npm-bump beta"
   },
   "author": "Lautaro Cozzani",
   "license": "MIT",
@@ -14,8 +15,11 @@
   },
   "devDependencies": {
     "@types/agenda": "^2.0.4",
+    "@types/jasmine": "^3.3.13",
     "inversify": "^5.0.1",
-    "mocha": "^6.1.4",
+    "jasmine": "^3.4.0",
+    "npm-bump": "0.0.25",
+    "reflect-metadata": "^0.1.13",
     "typescript": "^3.5.1"
   },
   "types": "dist/index.d.ts"
