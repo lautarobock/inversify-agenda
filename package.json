@@ -1,0 +1,22 @@
+{
+  "name": "inversify-agenda",
+  "version": "0.0.6",
+  "description": "inversify utilities (decorators, etc) to integrate agenda with inversify",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "author": "Lautaro Cozzani",
+  "license": "MIT",
+  "dependencies": {
+    "agenda": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/agenda": "^2.0.4",
+    "inversify": "^5.0.1",
+    "mocha": "^6.1.4",
+    "typescript": "^3.5.1"
+  },
+  "types": "dist/index.d.ts"
+}
