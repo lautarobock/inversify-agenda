@@ -1,6 +1,5 @@
 
-[![NPM](https://nodei.co/npm/inversify-agenda.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/inversify-agenda)
-[![NPM](https://nodei.co/npm-dl/inversify-agenda.png?months=9&height=1)](https://nodei.co/npm/inversify-agenda/)
+https://www.npmjs.com/package/inversify-agenda
 
 Some utilities for the development of [agenda](https://github.com/agenda/agenda) workers with Inversify.
 
