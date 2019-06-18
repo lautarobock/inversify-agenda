@@ -35,6 +35,8 @@ export function task(key: string, ...int: (number | string)[]) {
 
 export class InversifyAgenda {
 
+    errorHandlers: ((err: Error) => void)[] = [];
+
     constructor(
         private container: Container,
         private config: {
@@ -63,10 +65,15 @@ export class InversifyAgenda {
         }
     }
 
+    onError(hanlder: (err: Error) => void) {
+        this.errorHandlers.push(hanlder);
+        return this;
+    }
+
     build() {
         inversifyAgendaTasksConfiguration.tasks.forEach(task => {
             this.container.bind(task.target).toSelf();
-            InversifyAgenda.defineTaskService(this.container, this.config.agenda, task.key, task.target);
+            this.defineTaskService(this.container, this.config.agenda, task.key, task.target);
         });
 
         this.config.agenda.on('ready', () =>
@@ -78,7 +85,7 @@ export class InversifyAgenda {
         return this.config.agenda;
     }
 
-    static defineTaskService(
+    defineTaskService(
         container: Container,
         agenda: Agenda,
         key: string,
@@ -90,6 +97,7 @@ export class InversifyAgenda {
                 done();
             } catch (err) {
                 done(err);
+                this.errorHandlers.forEach(handler => handler(err));
             }
         });
     }

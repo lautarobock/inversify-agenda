@@ -1,42 +1,5 @@
 import 'reflect-metadata';
-import { InversifyAgenda, AgendaTaskCommand, task, inversifyAgendaTasksConfiguration } from './inversify-agenda';
-import { Container } from 'inversify';
-import * as Agenda from 'agenda';
-
-describe('defineTaskService', () => {
-
-    class TestCommand implements AgendaTaskCommand {
-        async execute() {
-            console.log('DO NOTHING');
-        }
-    }
-
-    it('should define agenda task with target command injected with inversify', () => {
-        const container: Container = {
-            get<T>(serviceIdentifier: any) {
-                return new TestCommand();
-            }
-        } as Container;
-        let func: (job: Agenda.Job<any>, done: (err?: Error) => void) => void;
-        const agenda: Agenda = {
-            define<T>(name: string, handler: (job: Agenda.Job<T>, done: (err?: Error) => void) => void) {
-                console.log('MOCK');
-                func = handler;
-            }
-        } as Agenda;
-        spyOn(agenda, 'define').and.callThrough();
-        spyOn(container, 'get').and.callThrough();
-        InversifyAgenda.defineTaskService(
-            container,
-            agenda,
-            'test',
-            TestCommand as any
-        );
-        expect(agenda.define).toHaveBeenCalledWith('test', jasmine.any(Function));
-        func.call(this, {}, (err?: Error) => console.log('DONE', err));
-        expect(container.get).toHaveBeenCalledWith(TestCommand);
-    })
-});
+import { AgendaTaskCommand, task, inversifyAgendaTasksConfiguration } from './inversify-agenda';
 
 describe('AgendaTask', () => {
     
