@@ -37,7 +37,7 @@ describe('AgendaTask', () => {
             key: 'test22',
             target: TestCommand22
         });
-        expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual(['test']);
-        expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual(['test2', 'test22']);
+        expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual([{key: 'test'}]);
+        expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual([{key: 'test2'}, {key: 'test22'}]);
     });
 });

@@ -6,6 +6,11 @@ export interface AgendaTaskConfig {
     target: any;
 }
 
+export interface AgendaTaskInterval<T> {
+    interval: number | string;
+    data: T;
+}
+
 export interface AgendaTaskCommand {
     execute(job: Agenda.Job<Agenda.JobAttributesData>): Promise<void>;
 }
@@ -13,21 +18,29 @@ export interface AgendaTaskCommand {
 export class InversifyAgendaTasksConfiguration {
 
     tasks: AgendaTaskConfig[] = [];
-    intervals: { [key: string]: string[]; } = {};
+    intervals: { [key: string]: { key: string, data?: any }[]; } = {};
 
-    decorateAndRegister(target: any, key: string, ...int: (number | string)[]) {
+    decorateAndRegister(target: any, key: string, ...intervals: (number | string | AgendaTaskInterval<any>)[]) {
         decorate(injectable(), target);
         this.tasks.push({ key, target });
-        int.forEach(i => {
-            this.intervals[i] = this.intervals[i] || [];
-            this.intervals[i].push(key);
+        intervals.forEach(interval => {
+            if (typeof interval === 'string' || typeof interval === 'number') {
+                this.intervals[interval] = this.intervals[interval] || [];
+                this.intervals[interval].push({ key });
+            } else {
+                this.intervals[interval.interval] = this.intervals[interval.interval] || [];
+                this.intervals[interval.interval].push({
+                    data: interval.data,
+                    key
+                });
+            }
         });
     }
 }
 
 export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfiguration();
 
-export function task(key: string, ...int: (number | string)[]) {
+export function task(key: string, ...int: (number | string | AgendaTaskInterval<any>)[]) {
     return (target: any) => {
         inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, ...int);
     };
@@ -78,8 +91,9 @@ export class InversifyAgenda {
 
         this.config.agenda.on('ready', () =>
             Object.keys(inversifyAgendaTasksConfiguration.intervals)
-                .map(interval => 
-                    this.config.agenda.every(interval, inversifyAgendaTasksConfiguration.intervals[interval])
+                .forEach(interval => 
+                    inversifyAgendaTasksConfiguration.intervals[interval]
+                        .forEach(d => this.config.agenda.every(interval, d.key, d.data))
                 )
         );
         return this.config.agenda;
