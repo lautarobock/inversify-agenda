@@ -77,6 +77,10 @@ const agenda = new InversifyAgenda(container, { agenda }).build();
 agenda.start();
 ```
 
+## Examples
+
+* [Simple](./examples/simple/README.md)
+
 ## Next steps
 
 1. Refactor in several files

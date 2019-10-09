@@ -1,0 +1,22 @@
+{
+  "name": "inversify-agenda-simple-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "agenda": "^2.1.0",
+    "inversify": "^5.0.1",
+    "inversify-agenda": "^1.1.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/agenda": "^2.0.6",
+    "typescript": "^3.6.3"
+  }
+}
