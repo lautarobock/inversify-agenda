@@ -88,4 +88,4 @@ agenda.start();
 
 ## Collaboration
 
-This proyect is widely open to collaborators, please feel free to raise an issue or create a pull request. 
+This proyect is widely open to collaborators, please feel free to raise an issue or create a pull request. Any doubt or suggestion you can write to lautarobock@gmail.com
