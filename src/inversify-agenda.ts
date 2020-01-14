@@ -4,6 +4,7 @@ import { Container, decorate, injectable } from 'inversify';
 export interface AgendaTaskConfig {
     key: string;
     target: any;
+    options?: Agenda.JobOptions;
 }
 
 export interface AgendaTaskInterval<T> {
@@ -20,9 +21,9 @@ export class InversifyAgendaTasksConfiguration {
     tasks: AgendaTaskConfig[] = [];
     intervals: { [key: string]: { key: string, data?: any }[]; } = {};
 
-    decorateAndRegister(target: any, key: string, ...intervals: (number | string | AgendaTaskInterval<any>)[]) {
+    decorateAndRegister(target: any, key: string, options: Agenda.JobOptions, intervals: (number | string | AgendaTaskInterval<any>)[]) {
         decorate(injectable(), target);
-        this.tasks.push({ key, target });
+        this.tasks.push({ key, target, options });
         intervals.forEach(interval => {
             if (typeof interval === 'string' || typeof interval === 'number') {
                 this.intervals[interval] = this.intervals[interval] || [];
@@ -40,9 +41,14 @@ export class InversifyAgendaTasksConfiguration {
 
 export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfiguration();
 
-export function task(key: string, ...int: (number | string | AgendaTaskInterval<any>)[]) {
+export function task(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
     return (target: any) => {
-        inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, ...int);
+        console.dir(int);
+        if (Array.isArray(int)) {
+            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, int);
+        } else {
+            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [int]);
+        }
     };
 }
 
@@ -86,12 +92,12 @@ export class InversifyAgenda {
     build() {
         inversifyAgendaTasksConfiguration.tasks.forEach(task => {
             this.container.bind(task.target).toSelf();
-            this.defineTaskService(this.container, this.config.agenda, task.key, task.target);
+            this.defineTaskService(this.container, this.config.agenda, task.key, task.target, task.options);
         });
 
         this.config.agenda.on('ready', () =>
             Object.keys(inversifyAgendaTasksConfiguration.intervals)
-                .forEach(interval => 
+                .forEach(interval =>
                     inversifyAgendaTasksConfiguration.intervals[interval]
                         .forEach(d => this.config.agenda.every(interval, d.key, d.data))
                 )
@@ -103,9 +109,10 @@ export class InversifyAgenda {
         container: Container,
         agenda: Agenda,
         key: string,
-        target: symbol
+        target: symbol,
+        options: Agenda.JobOptions
     ) {
-        agenda.define(key, async (job: Agenda.Job<Agenda.JobAttributesData>, done: (err?: Error) => void) => {
+        agenda.define(key, options, async (job: Agenda.Job<Agenda.JobAttributesData>, done: (err?: Error) => void) => {
             try {
                 await (container.get(target) as any).execute(job);
                 done();

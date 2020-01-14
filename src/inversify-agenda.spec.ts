@@ -2,8 +2,8 @@ import 'reflect-metadata';
 import { AgendaTaskCommand, task, inversifyAgendaTasksConfiguration } from './inversify-agenda';
 
 describe('AgendaTask', () => {
-    
-    @task('test', '10 minutes')
+
+    @task('test', ['10 minutes', '20 minutes'])
     class TestCommand implements AgendaTaskCommand {
         async execute() {
             console.log('DO NOTHING');
@@ -17,7 +17,7 @@ describe('AgendaTask', () => {
         }
     }
 
-    @task('test22', '20 minutes')
+    @task('test22', '20 minutes', { concurrency: 1 })
     class TestCommand22 implements AgendaTaskCommand {
         async execute() {
             console.log('DO NOTHING');
@@ -27,17 +27,20 @@ describe('AgendaTask', () => {
     it('should invoke decorate class with @inject() add task definition and interval definition', () => {
         expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test')).toEqual({
             key: 'test',
-            target: TestCommand
+            target: TestCommand,
+            options: undefined
         });
         expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test2')).toEqual({
             key: 'test2',
-            target: TestCommand2
+            target: TestCommand2,
+            options: undefined
         });
         expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test22')).toEqual({
             key: 'test22',
-            target: TestCommand22
+            target: TestCommand22,
+            options: { concurrency: 1 }
         });
-        expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual([{key: 'test'}]);
-        expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual([{key: 'test2'}, {key: 'test22'}]);
+        expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual([{ key: 'test' }]);
+        expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual([{ key: 'test' }, { key: 'test2' }, { key: 'test22' }]);
     });
 });
