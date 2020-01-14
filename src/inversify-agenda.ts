@@ -101,6 +101,7 @@ export class InversifyAgenda {
                         .forEach(d => this.config.agenda.every(interval, d.key, d.data))
                 )
         );
+        this.container.bind(InversifyAgendaService).toConstantValue(new InversifyAgendaService(this.config.agenda));
         return this.config.agenda;
     }
 
@@ -125,5 +126,14 @@ export class InversifyAgenda {
         } else {
             agenda.define(key, done);
         }
+    }
+}
+
+export class InversifyAgendaService {
+
+    constructor(private agenda: Agenda) {}
+
+    now<T extends Agenda.JobAttributesData = Agenda.JobAttributesData>(name: string, data?: T): Promise<Agenda.Job<T>> {
+        return this.agenda.now(name, data);
     }
 }
