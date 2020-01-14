@@ -43,7 +43,6 @@ export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfigu
 
 export function task(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
     return (target: any) => {
-        console.dir(int);
         if (Array.isArray(int)) {
             inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, int);
         } else {
@@ -112,7 +111,7 @@ export class InversifyAgenda {
         target: symbol,
         options: Agenda.JobOptions
     ) {
-        agenda.define(key, options, async (job: Agenda.Job<Agenda.JobAttributesData>, done: (err?: Error) => void) => {
+        const done = async (job: Agenda.Job<Agenda.JobAttributesData>, done: (err?: Error) => void) => {
             try {
                 await (container.get(target) as any).execute(job);
                 done();
@@ -120,6 +119,11 @@ export class InversifyAgenda {
                 done(err);
                 this.errorHandlers.forEach(handler => handler(err));
             }
-        });
+        };
+        if (options) {
+            agenda.define(key, options, done);
+        } else {
+            agenda.define(key, done);
+        }
     }
 }
