@@ -5,6 +5,7 @@ export interface AgendaTaskConfig {
     key: string;
     target: any;
     options?: Agenda.JobOptions;
+    focus?: boolean;
 }
 
 export interface AgendaTaskInterval<T> {
@@ -21,9 +22,9 @@ export class InversifyAgendaTasksConfiguration {
     tasks: AgendaTaskConfig[] = [];
     intervals: { [key: string]: { key: string, data?: any }[]; } = {};
 
-    decorateAndRegister(target: any, key: string, options: Agenda.JobOptions, intervals: (number | string | AgendaTaskInterval<any>)[]) {
+    decorateAndRegister(target: any, key: string, options: Agenda.JobOptions, intervals: (number | string | AgendaTaskInterval<any>)[], focus: boolean) {
         decorate(injectable(), target);
-        this.tasks.push({ key, target, options });
+        this.tasks.push({ key, target, options, focus });
         intervals.forEach(interval => {
             if (typeof interval === 'string' || typeof interval === 'number') {
                 this.intervals[interval] = this.intervals[interval] || [];
@@ -41,14 +42,22 @@ export class InversifyAgendaTasksConfiguration {
 
 export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfiguration();
 
-export function task(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
+export function task(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions, focus?: boolean) {
     return (target: any) => {
         if (Array.isArray(int)) {
-            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, int);
+            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, int, focus);
         } else {
-            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [int]);
+            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [int], focus);
         }
     };
+}
+
+export function ftask(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
+    return task(key, int, options);
+}
+
+export function xtask(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
+    console.log('xtask() // ignoring', key);
 }
 
 export class InversifyAgenda {
@@ -89,7 +98,12 @@ export class InversifyAgenda {
     }
 
     build() {
-        inversifyAgendaTasksConfiguration.tasks.forEach(task => {
+        let tasks = inversifyAgendaTasksConfiguration.tasks;
+        const focused = inversifyAgendaTasksConfiguration.tasks.filter(t => t.focus);
+        if (focused.length) {
+            tasks = focused;
+        }
+        tasks.forEach(task => {
             this.container.bind(task.target).toSelf();
             this.defineTaskService(this.container, this.config.agenda, task.key, task.target, task.options);
         });
