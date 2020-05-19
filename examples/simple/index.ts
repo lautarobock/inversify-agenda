@@ -30,7 +30,7 @@ const container = new Container();
  */
 new InversifyAgenda(container, {
     db: {
-        address: 'mongodb://example:example123@ds233258.mlab.com:33258/inversify-agenda-simple-example',
+        address: 'mongodb+srv://example:example123@inversify-agenda-simple-example-u7khj.mongodb.net/inversify-agenda-simple-example?retryWrites=true&w=majority',
         options: {
         useNewUrlParser: true
         }
