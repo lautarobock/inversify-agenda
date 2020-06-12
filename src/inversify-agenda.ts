@@ -53,7 +53,7 @@ export function task(key: string, int: (number | string | AgendaTaskInterval<any
 }
 
 export function ftask(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
-    return task(key, int, options);
+    return task(key, int, options, true);
 }
 
 export function xtask(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions) {
