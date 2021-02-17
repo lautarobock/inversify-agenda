@@ -92,6 +92,7 @@ export class InversifyAgenda {
                 }
             });
         }
+        this.container.bind(InversifyAgendaService).toConstantValue(new InversifyAgendaService(this.config.agenda));
     }
 
     onError(hanlder: (err: Error) => void) {
@@ -117,7 +118,6 @@ export class InversifyAgenda {
                         .forEach(d => this.config.agenda.every(interval, d.key, d.data))
                 )
         );
-        this.container.bind(InversifyAgendaService).toConstantValue(new InversifyAgendaService(this.config.agenda));
         return this.config.agenda;
     }
 
@@ -144,21 +144,19 @@ export class InversifyAgenda {
         }
     }
 
-    now(task: any, data?: any) {
-        try {
-            const t = inversifyAgendaTasksConfiguration.tasks.find(t => t.target === task);
-            this.config.agenda.now(t.key, data);
-        } catch (err) {
-            throw new Error('Class is not register as a agenda task');
-        }
-    }
 }
 
+@injectable()
 export class InversifyAgendaService {
 
     constructor(private agenda: Agenda) {}
 
-    now<T extends Agenda.JobAttributesData = Agenda.JobAttributesData>(name: string, data?: T): Promise<Agenda.Job<T>> {
-        return this.agenda.now(name, data);
+    now<T extends Agenda.JobAttributesData = Agenda.JobAttributesData>(task: any, data?: T): Promise<Agenda.Job<T>> {
+        try {
+            const t = inversifyAgendaTasksConfiguration.tasks.find(t => t.target === task);
+            return this.agenda.now(t.key, data);
+        } catch (err) {
+            throw new Error('Class is not register as a agenda task');
+        }
     }
 }
