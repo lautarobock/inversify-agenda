@@ -42,12 +42,14 @@ export class InversifyAgendaTasksConfiguration {
 
 export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfiguration();
 
-export function task(key: string, int: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions, focus?: boolean) {
+export function task(key: string, int?: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions, focus?: boolean) {
     return (target: any) => {
-        if (Array.isArray(int)) {
+        if (int && Array.isArray(int)) {
             inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, int, focus);
-        } else {
+        } else if (int && !Array.isArray(int)) {
             inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [int], focus);
+        } else {
+            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [], focus);
         }
     };
 }
@@ -139,6 +141,15 @@ export class InversifyAgenda {
             agenda.define(key, options, done);
         } else {
             agenda.define(key, done);
+        }
+    }
+
+    now(task: any, data?: any) {
+        try {
+            const t = inversifyAgendaTasksConfiguration.tasks.find(t => t.target === task);
+            this.config.agenda.now(t.key, data);
+        } catch (err) {
+            throw new Error('Class is not register as a agenda task');
         }
     }
 }
