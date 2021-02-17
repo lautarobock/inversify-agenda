@@ -146,7 +146,6 @@ export class InversifyAgenda {
 
 }
 
-@injectable()
 export class InversifyAgendaService {
 
     constructor(private agenda: Agenda) {}

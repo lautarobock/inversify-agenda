@@ -1,8 +1,11 @@
 {
   "name": "inversify-agenda",
-  "version": "1.4.5",
+  "version": "1.4.7",
   "description": "inversify utilities (decorators, etc) to integrate agenda with inversify",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "npm run build && jasmine --config=jasmine.json",
     "build": "tsc",
