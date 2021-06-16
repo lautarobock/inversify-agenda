@@ -22,8 +22,7 @@ export class InversifyAgendaTasksConfiguration {
     tasks: AgendaTaskConfig[] = [];
     intervals: { [key: string]: { key: string, data?: any }[]; } = {};
 
-    decorateAndRegister(target: any, key: string, options: Agenda.JobOptions, intervals: (number | string | AgendaTaskInterval<any>)[], focus: boolean) {
-        decorate(injectable(), target);
+    register(target: any, key: string, options: Agenda.JobOptions, intervals: (number | string | AgendaTaskInterval<any>)[], focus: boolean) {
         this.tasks.push({ key, target, options, focus });
         intervals.forEach(interval => {
             if (typeof interval === 'string' || typeof interval === 'number') {
@@ -44,12 +43,13 @@ export const inversifyAgendaTasksConfiguration = new InversifyAgendaTasksConfigu
 
 export function task(key: string, int?: (number | string | AgendaTaskInterval<any>) | (number | string | AgendaTaskInterval<any>)[], options?: Agenda.JobOptions, focus?: boolean) {
     return (target: any) => {
+        decorate(injectable(), target);
         if (int && Array.isArray(int)) {
-            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, int, focus);
+            int.forEach((interval, idx) => inversifyAgendaTasksConfiguration.register(target, `${key}.${idx}`, options, [interval], focus));
         } else if (int && !Array.isArray(int)) {
-            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [int], focus);
+            inversifyAgendaTasksConfiguration.register(target, key, options, [int], focus);
         } else {
-            inversifyAgendaTasksConfiguration.decorateAndRegister(target, key, options, [], focus);
+            inversifyAgendaTasksConfiguration.register(target, key, options, [], focus);
         }
     };
 }

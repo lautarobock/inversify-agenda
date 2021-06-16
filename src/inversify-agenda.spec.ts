@@ -25,8 +25,20 @@ describe('AgendaTask', () => {
     }
 
     it('should invoke decorate class with @inject() add task definition and interval definition', () => {
-        expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test')).toEqual({
-            key: 'test',
+        expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test.0')).toEqual({
+            key: 'test.0',
+            target: TestCommand,
+            options: undefined,
+            focus: undefined
+        });
+        expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test.1')).toEqual({
+            key: 'test.1',
+            target: TestCommand,
+            options: undefined,
+            focus: undefined
+        });
+        expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test.2')).toEqual({
+            key: 'test.2',
             target: TestCommand,
             options: undefined,
             focus: undefined
@@ -43,8 +55,8 @@ describe('AgendaTask', () => {
             options: { concurrency: 1 },
             focus: undefined
         });
-        expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual([{ key: 'test' }]);
-        expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual([{ key: 'test' }, { key: 'test2' }, { key: 'test22' }]);
-        expect(inversifyAgendaTasksConfiguration.intervals['30 minutes']).toEqual([{ key: 'test' }]);
+        expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual([{ key: 'test.0' }]);
+        expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual([{ key: 'test.1' }, { key: 'test2' }, { key: 'test22' }]);
+        expect(inversifyAgendaTasksConfiguration.intervals['30 minutes']).toEqual([{ key: 'test.2' }]);
     });
 });

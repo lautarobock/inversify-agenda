@@ -1,6 +1,6 @@
 {
   "name": "inversify-agenda",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "inversify utilities (decorators, etc) to integrate agenda with inversify",
   "main": "dist/index.js",
   "files": [
