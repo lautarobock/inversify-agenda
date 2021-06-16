@@ -22,9 +22,9 @@ export class InversifyAgendaTasksConfiguration {
     tasks: AgendaTaskConfig[] = [];
     intervals: { [key: string]: { key: string, data?: any }[]; } = {};
 
-    register(target: any, key: string, options: Agenda.JobOptions, intervals: (number | string | AgendaTaskInterval<any>)[], focus: boolean) {
-        this.tasks.push({ key, target, options, focus });
-        intervals.forEach(interval => {
+    register(target: any, key: string, options: Agenda.JobOptions, interval: (number | string | AgendaTaskInterval<any>), focus: boolean) {
+        this.tasks.push({ key, target, options, focus });        
+        if (interval) {
             if (typeof interval === 'string' || typeof interval === 'number') {
                 this.intervals[interval] = this.intervals[interval] || [];
                 this.intervals[interval].push({ key });
@@ -35,7 +35,7 @@ export class InversifyAgendaTasksConfiguration {
                     key
                 });
             }
-        });
+        }
     }
 }
 
@@ -45,11 +45,11 @@ export function task(key: string, int?: (number | string | AgendaTaskInterval<an
     return (target: any) => {
         decorate(injectable(), target);
         if (int && Array.isArray(int)) {
-            int.forEach((interval, idx) => inversifyAgendaTasksConfiguration.register(target, `${key}.${idx}`, options, [interval], focus));
+            int.forEach((interval, idx) => inversifyAgendaTasksConfiguration.register(target, `${key}.${idx}`, options, interval, focus));
         } else if (int && !Array.isArray(int)) {
-            inversifyAgendaTasksConfiguration.register(target, key, options, [int], focus);
+            inversifyAgendaTasksConfiguration.register(target, key, options, int, focus);
         } else {
-            inversifyAgendaTasksConfiguration.register(target, key, options, [], focus);
+            inversifyAgendaTasksConfiguration.register(target, key, options, undefined, focus);
         }
     };
 }
