@@ -3,7 +3,7 @@ import { AgendaTaskCommand, task, inversifyAgendaTasksConfiguration } from './in
 
 describe('AgendaTask', () => {
 
-    @task('test', ['10 minutes', '20 minutes'])
+    @task('test', ['10 minutes', '20 minutes', '30 minutes'])
     class TestCommand implements AgendaTaskCommand {
         async execute() {
             console.log('DO NOTHING');
@@ -28,19 +28,23 @@ describe('AgendaTask', () => {
         expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test')).toEqual({
             key: 'test',
             target: TestCommand,
-            options: undefined
+            options: undefined,
+            focus: undefined
         });
         expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test2')).toEqual({
             key: 'test2',
             target: TestCommand2,
-            options: undefined
+            options: undefined,
+            focus: undefined
         });
         expect(inversifyAgendaTasksConfiguration.tasks.find(t => t.key === 'test22')).toEqual({
             key: 'test22',
             target: TestCommand22,
-            options: { concurrency: 1 }
+            options: { concurrency: 1 },
+            focus: undefined
         });
         expect(inversifyAgendaTasksConfiguration.intervals['10 minutes']).toEqual([{ key: 'test' }]);
         expect(inversifyAgendaTasksConfiguration.intervals['20 minutes']).toEqual([{ key: 'test' }, { key: 'test2' }, { key: 'test22' }]);
+        expect(inversifyAgendaTasksConfiguration.intervals['30 minutes']).toEqual([{ key: 'test' }]);
     });
 });
