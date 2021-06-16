@@ -1,7 +1,7 @@
 import { InversifyAgenda, AgendaTaskCommand, task } from 'inversify-agenda';
 import 'reflect-metadata';
 import { Container } from 'inversify';
-import { JobAttributesData, Job } from 'agenda';
+import { JobAttributesData, Job } from 'agenda/es';
 
 /**
  * First step, create class for tasks/jobs.

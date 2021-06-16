@@ -1,4 +1,4 @@
-import * as Agenda from 'agenda';
+import { Agenda } from 'agenda/es';
 import { Container, decorate, injectable } from 'inversify';
 
 export interface AgendaTaskConfig {
@@ -152,8 +152,14 @@ export class InversifyAgendaService {
 
     now<T extends Agenda.JobAttributesData = Agenda.JobAttributesData>(task: any, data?: T): Promise<Agenda.Job<T>> {
         try {
-            const t = inversifyAgendaTasksConfiguration.tasks.find(t => t.target === task);
-            return this.agenda.now(t.key, data);
+            let key: string;
+            if (typeof task === 'string') {
+                key = task;
+            } else {
+                const t = inversifyAgendaTasksConfiguration.tasks.find(t => t.target === task);
+                key = t.key;
+            }
+            return this.agenda.now(key, data);
         } catch (err) {
             throw new Error('Class is not register as a agenda task');
         }
