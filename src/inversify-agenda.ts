@@ -115,7 +115,10 @@ export class InversifyAgenda {
             Object.keys(inversifyAgendaTasksConfiguration.intervals)
                 .forEach(interval =>
                     inversifyAgendaTasksConfiguration.intervals[interval]
-                        .forEach(d => this.config.agenda.every(interval, d.key, d.data))
+                        .forEach(d => {
+                            console.log('Agenda config every', interval, d.key, d.data);
+                            this.config.agenda.every(interval, d.key, d.data);
+                        })
                 )
         );
         return this.config.agenda;
