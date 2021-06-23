@@ -107,7 +107,9 @@ export class InversifyAgenda {
             tasks = focused;
         }
         tasks.forEach(task => {
-            this.container.bind(task.target).toSelf();
+            if (!this.container.isBound(task.target)) {
+                this.container.bind(task.target).toSelf();
+            }
             this.defineTaskService(this.container, this.config.agenda, task.key, task.target, task.options);
         });
 
